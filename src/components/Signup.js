@@ -10,6 +10,12 @@ import { jwtDecode } from 'jwt-decode';
 
 import Swal from 'sweetalert2'
 
+import TreeList from "../datastructures/TreeList"
+import LinkedList from "../datastructures/LinkedList"
+import DynamicArray from "../datastructures/DynamicArray";
+import FrequencyListV1 from "../datastructures/FrequencyListV1"
+import FrequencyListV2 from "../datastructures/FrequencyListV2"
+
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Box from '@mui/system/Box';
@@ -75,31 +81,78 @@ const Signup = () => {
 
     const handleGoogleLogin = async (credentialResponse) => {
         try{
+            // let treelist = new TreeList(100)
+            // let treeliststr = treelist.toJSON()
+            let frequencylistv2 = new FrequencyListV2(100)
+            let frequencylistv2str = frequencylistv2.toJSON()
+
+            let frequencylistv1 = new FrequencyListV1(100)
+            let frequencylistv1str = frequencylistv1.toJSON()
+        
+            let linkedlist = new LinkedList()
+            let linkedliststr = linkedlist.toJSON()
+        
+            let dynamicarray = new DynamicArray(100)
+            let dynamicarraystr = dynamicarray.toJSON()
+
             const credentials = jwtDecode(credentialResponse.credential)
           
             const data = {
-                email : credentials.email,
-                password: null,
-                expiration : credentials.exp,
-                firstname : credentials.given_name,
-                lastname : credentials.family_name,
-                origin : "Google",
-                role : "User",
-                AccountStatus : "Operational"
+                Email : credentials.email,
+                Password: null,
+                ExpirationDate : credentials.exp,
+                Firstname : credentials.given_name,
+                Lastname : credentials.family_name,
+                Origin : "Google",
+                Role : "User",
+                isVerified: 1,
+                // treeliststr,
+                frequencylistv2str,
+                frequencylistv1str,
+                linkedliststr,
+                dynamicarraystr,
+                AccountStatus: "Operational"
             }
 
+            // const data = {}
+
             // checks wheter email is already registered 
-            let response = await axios.post(`${domain}/signup`, {data});
+            let response = await axios.post(`http://${domain}/signup`, {data});
             
             if (!response.data[0]) { // no account yet, register the credentials
-                let createdAccountResult = await axios.post(`${domain}/signup/createAccount`, {data});
-                data.accountID = createdAccountResult.data.insertId;                
+                let createdAccountResult = await axios.post(`http://${domain}/signup/createAccount`, {data});
+                response = await axios.post(`http://${domain}/signup`, {data});           
             } 
 
-            // pass the user account details in json format
-            const userDetails = JSON.stringify(data)
-            sessionStorage.setItem('userDetails', userDetails);
-            navigate('/analytics');
+            let AccountStatus = response.data[0].AccountStatus
+            if(AccountStatus === "Disabled"){
+                setError("root", { message: "Account is disabled.",})
+            }else{
+                // Check if another instance is already logged in
+                const anotherInstanceLoggedIn = localStorage.getItem('isLoggedIn');
+                if (anotherInstanceLoggedIn) {
+                    setError("root", { message: "Account is logged in another tab.",});
+                    return;
+                }
+                localStorage.setItem('isLoggedIn', true);
+                // Attach a listener to detect tab/browser closure
+                window.addEventListener('beforeunload', () => {
+                    // Send a broadcast message to other tabs
+                    const channel = new BroadcastChannel('auth_channel');
+                    channel.postMessage({ type: 'logout' });
+
+                    // Clear the flag from localStorage
+                    localStorage.removeItem('isLoggedIn');
+                });
+                // send a message to other tabs
+                const channel = new BroadcastChannel('auth_channel');
+                channel.postMessage({ type: 'login' });
+                
+                 // pass the user account details in json format
+                const userDetails = JSON.stringify(response.data[0])
+                sessionStorage.setItem('userDetails', userDetails);
+                navigate('/analytics');
+            }
         }catch (error) {
           console.error('Error from handleGoogleLogin() function', error);
         }

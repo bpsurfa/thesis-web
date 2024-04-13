@@ -2,6 +2,7 @@ const { con } = require('./Connection');
 
 //functions for queries
 const insertActionResults = (actionResults, callback) => {
+	console.log(actionResults.ActionSet)
     let ar = actionResults
     let JSONResults = actionResults.JSONResults
     let ActionDate = actionResults.ActionDate
@@ -46,23 +47,45 @@ const updateCapacity = (actionResults, callback) => {
 }
 
 const getHistoryTableData = (AccountID, callback) => {
-    const query = 
-    `SELECT 
-    ROW_NUMBER() OVER (ORDER BY datastructures.DSBatch DESC, actionresults.ActionSet DESC) AS RowNumber,
-    datastructures.*, 
-    actionresults.*
+    // const query = 
+    // `SELECT 
+    // ROW_NUMBER() OVER (ORDER BY datastructures.DSBatch DESC, actionresults.ActionSet DESC) AS RowNumber,
+    // datastructures.*, 
+    // actionresults.*
+    // FROM 
+    //     datastructures
+    // LEFT JOIN 
+    //     actionresults ON actionresults.DSID = datastructures.DSID
+    // WHERE 
+    //     datastructures.AccountID = ?
+    // GROUP BY 
+    //     datastructures.DSBatch, 
+    //     actionresults.ActionDate
+    // ORDER BY 
+    //     datastructures.DSBatch DESC, 
+    //     actionresults.ActionSet DESC;`
+
+    const query = `
+    SELECT 
+    ROW_NUMBER() OVER (ORDER BY d.DSBatch DESC, a.ActionSet DESC) AS RowNumber,
+    d.*,
+    a.*
     FROM 
-        datastructures
+        datastructures d
     LEFT JOIN 
-        actionresults ON actionresults.DSID = datastructures.DSID
+        (
+            SELECT 
+                *,
+                ROW_NUMBER() OVER (PARTITION BY DSBatch, ActionSet ORDER BY ActionNumber) AS rn
+            FROM 
+                actionresults
+        ) a ON a.DSID = d.DSID
     WHERE 
-        datastructures.AccountID = ?
-    GROUP BY 
-        datastructures.DSBatch, 
-        actionresults.ActionDate
+        d.AccountID = ?
+        AND (a.rn = 1 OR a.rn IS NULL)
     ORDER BY 
-        datastructures.DSBatch DESC, 
-        actionresults.ActionSet DESC;`
+        d.DSBatch DESC, 
+        a.ActionSet DESC;`
     
     const values = [AccountID]
 

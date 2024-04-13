@@ -302,6 +302,7 @@ const CRUD = ({display, charts}) => {
 }
 
 const AddDialog = ({addModal, maxIndex, datastructures, updatedsdetails, executeQuery}) =>{
+    
     const [domain] = useContext(domainContext)
 
     const formRef = useRef(null);
@@ -359,6 +360,7 @@ const AddDialog = ({addModal, maxIndex, datastructures, updatedsdetails, execute
     }
 
     const add = async (datastructures, index, count, parameter) => {
+        console.log("test")
         index = index == '' ? 0 : parseInt(index)
         count = parseInt(count)
         parameter = parameter == '' ? "Add Start" : parameter

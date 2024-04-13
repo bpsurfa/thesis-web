@@ -51,7 +51,14 @@ const Settings = ({display}) => {
 
     const handleLogout = () => {
         const handleConfirm = () => {
+            // Send a message to other tabs
+            const channel = new BroadcastChannel('auth_channel');
+            channel.postMessage({ type: 'logout' });
+            // Clear login state from localStorage
+            localStorage.removeItem('isLoggedIn');
+
             sessionStorage.clear();
+            
             navigate('/')
         }
 

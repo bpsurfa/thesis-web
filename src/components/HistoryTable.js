@@ -116,6 +116,7 @@ export default function HistoryTable() {
 
       // get table data
       let response = await axios.post(`${domain}/history/getHistoryTableData`, {AccountID});
+      console.log(response.data, "data")
 
       let arr = []
 
@@ -150,7 +151,8 @@ export default function HistoryTable() {
 
         arr.push({ rownumber, batch, actionnumber, datastructures, size, lastaction, datecreated, lastupdated})
       }
-    
+      
+      console.log(arr, "arr")
       setRows(arr)
     }
 

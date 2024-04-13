@@ -20,6 +20,17 @@ const con = mysql.createConnection({
 //     // queueLimit: 0
 // });
 
+// const con = mysql.createConnection({
+//     host: 'http://31.220.17.234/',
+//     user: 'rmdldeleon',
+//     password: '152431524466aA',
+//     database: 'custom_list',
+//     // waitForConnection: true,
+//     // connectionLimit: 10,
+//     // queueLimit: 0
+// });
+
+
 con.connect((err) => {
     if(err){
         console.error('Error connecting to database:', err);

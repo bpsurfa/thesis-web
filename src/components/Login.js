@@ -33,7 +33,32 @@ const Login = () => {
 
     //useEffects
     useEffect(() => {
-        
+        // disable back button
+        const disableBackButton = () => {
+            window.history.pushState(null, '', window.location.href);
+            window.onpopstate = function () {
+              window.history.pushState(null, '', window.location.href);
+            };
+        };
+        disableBackButton();
+
+        // Listen for login/logout events from other tabs
+        const channel = new BroadcastChannel('auth_channel');
+        channel.onmessage = (event) => {
+            if (event.data.type === 'login') {
+                localStorage.setItem('isLoggedIn', true);
+            } else if (event.data.type === 'logout') {
+                localStorage.removeItem('isLoggedIn');
+            }
+        };
+
+        // clean up
+        return () => {
+            window.onpopstate = null;
+
+            //close the broadcast channel when the component is unmounted
+            channel.close();
+        };
     }, []);
 
     // functions
@@ -43,16 +68,37 @@ const Login = () => {
             
             const response = await axios.post(`http://${domain}/login`, {data,});
             console.log(response)
-            let AccountStatus = response.data[0].AccountStatus
+            let AccountStatus = response.data[0] ? response.data[0].AccountStatus : ''
 
             if(!response.data[0]){ // if array is empty
                 setError("root", { message: "Login failed. Please try again.",});
             }else if(AccountStatus === "Disabled"){
                 setError("root", { message: "Account is disabled.",})
             }else{
+                // Check if another instance is already logged in
+                const anotherInstanceLoggedIn = localStorage.getItem('isLoggedIn');
+                if (anotherInstanceLoggedIn) {
+                    setError("root", { message: "Account is logged in another tab.",});
+                    return;
+                }
+                localStorage.setItem('isLoggedIn', true);
+                // Attach a listener to detect tab/browser closure
+                window.addEventListener('beforeunload', () => {
+                    // Send a broadcast message to other tabs
+                    const channel = new BroadcastChannel('auth_channel');
+                    channel.postMessage({ type: 'logout' });
+
+                    // Clear the flag from localStorage
+                    localStorage.removeItem('isLoggedIn');
+                });
+                // send a message to other tabs
+                const channel = new BroadcastChannel('auth_channel');
+                channel.postMessage({ type: 'login' });
+
                 // pass the user account details in json format
                 const userDetails = JSON.stringify(response.data[0])
                 sessionStorage.setItem('userDetails', userDetails);
+                
                 navigate('/analytics');
             }
         } catch (error) {
@@ -109,6 +155,26 @@ const Login = () => {
             if(AccountStatus === "Disabled"){
                 setError("root", { message: "Account is disabled.",})
             }else{
+                // Check if another instance is already logged in
+                const anotherInstanceLoggedIn = localStorage.getItem('isLoggedIn');
+                if (anotherInstanceLoggedIn) {
+                    setError("root", { message: "Account is logged in another tab.",});
+                    return;
+                }
+                localStorage.setItem('isLoggedIn', true);
+                // Attach a listener to detect tab/browser closure
+                window.addEventListener('beforeunload', () => {
+                    // Send a broadcast message to other tabs
+                    const channel = new BroadcastChannel('auth_channel');
+                    channel.postMessage({ type: 'logout' });
+
+                    // Clear the flag from localStorage
+                    localStorage.removeItem('isLoggedIn');
+                });
+                // send a message to other tabs
+                const channel = new BroadcastChannel('auth_channel');
+                channel.postMessage({ type: 'login' });
+                
                  // pass the user account details in json format
                 const userDetails = JSON.stringify(response.data[0])
                 sessionStorage.setItem('userDetails', userDetails);

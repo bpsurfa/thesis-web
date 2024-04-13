@@ -66,6 +66,7 @@ export default function SizeResult() {
   const getOutput = () => {
         if(openedDSDetails && openedDSDetails.dsDetails.JSONResults){
             let dsDetails = openedDSDetails.dsDetails
+            console.log(dsDetails)
 
             if(dsDetails.dsname === "Dynamic Array"){
                 let prevSize = JSON.parse(dsDetails.JSONResults)[0].prevSize
@@ -73,7 +74,7 @@ export default function SizeResult() {
                 let sizeAdded = size - prevSize
 
                 // is actually capacity, did this for code simplicity in printing it
-                let pointers = dsDetails.frequency
+                let pointers = dsDetails.capacity || dsDetails.frequency
                 let pointersAdded = dsDetails.sizeAdded
                 let primaryText = "Capacity"
 
