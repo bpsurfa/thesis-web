@@ -33,6 +33,8 @@ const Login = () => {
 
     //useEffects
     useEffect(() => {
+        document.title = 'Custom List'; // change tab header/title
+
         // disable back button
         const disableBackButton = () => {
             window.history.pushState(null, '', window.location.href);

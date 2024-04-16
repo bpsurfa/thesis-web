@@ -53,8 +53,9 @@ const SideBarItem = (props) =>{
             }
 
             props.setHeaderTitle("Analytics")
+            document.title = 'Analytics';
             navigate('/analytics');
-        }else if(props.title==="Charts"){
+        }else if(props.title==="Charts"){ // this panel has been removed
             props.setChartsOpen('block')
             props.setCurrentPanelOpened(() => props.setChartsOpen)
 
@@ -76,7 +77,7 @@ const SideBarItem = (props) =>{
             }
 
             props.setHeaderTitle("History")
-
+            document.title = 'History';
             navigate('/history');
         }else if(props.title==="Settings"){
             props.setSettingsOpen('block')
@@ -89,7 +90,7 @@ const SideBarItem = (props) =>{
             }
 
             props.setHeaderTitle("Settings")
-
+            document.title = 'Settings';
             navigate('/settings');
         }else if(props.title === "Admin"){
             props.setAdminOpen('block')
@@ -102,7 +103,7 @@ const SideBarItem = (props) =>{
             }
 
             props.setHeaderTitle("Admin")
-
+            document.title = 'Admin';
             navigate('/admin');
         }else if(props.title==="About"){
             props.setAboutOpen('block')
@@ -115,7 +116,7 @@ const SideBarItem = (props) =>{
             }
 
             props.setHeaderTitle("About")
-
+            document.title = 'About';
             navigate('/about');
         }
     }

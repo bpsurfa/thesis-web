@@ -228,6 +228,8 @@ const CRUD = ({display, charts}) => {
     }
 
     useEffect(() => {
+        document.title = 'Analytics';
+        
         if(!userDetails){
             navigate('/');
         }
@@ -239,6 +241,7 @@ const CRUD = ({display, charts}) => {
         
         const fetchData = async () => {
             try {                
+                console.log(userDetails, "userDetails")
                 //get the last actions and datastructure 
                 let response = await axios.post(`${domain}/analytics`, {userDetails});
 

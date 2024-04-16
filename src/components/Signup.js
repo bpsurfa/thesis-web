@@ -40,7 +40,7 @@ const Signup = () => {
 
     //useEffects
     useEffect(() => {
-        
+        document.title = 'Custom List'; // change tab header/title
     }, []);
 
     // functions

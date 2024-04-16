@@ -184,7 +184,7 @@ export default function LastActionResult() {
                             {sortedDS.map((item, index) => (
                                 <div key={index}>
                                     <ListItemButton>
-                                      <ListItemText primary={item.dsname} secondary={item.speedms + "ms"} />
+                                      <ListItemText primary={(index+1) + ". " + item.dsname} secondary={item.speedms + "ms"} />
                                     </ListItemButton>
                                     {index !== sortedDS.length - 1 && <Divider />}
                                 </div>
@@ -204,7 +204,7 @@ export default function LastActionResult() {
                             {sortedByAverageDS.map((item, index) => (
                                 <div key={index}>
                                     <ListItemButton>
-                                      <ListItemText primary={item.dsname} secondary={item.standardDeviation + `ms (Standard Deviation)`} />
+                                      <ListItemText primary={(index+1) + ". " + item.dsname} secondary={item.standardDeviation + `ms (Standard Deviation)`} />
 
                                       <Typography variant="body2" color="textSecondary">
                                           {item.mean + " ms Average Speed"}
@@ -228,7 +228,7 @@ export default function LastActionResult() {
                             {sortedBySpaceDS.map((item, index) => (
                                 <div key={index}>
                                     <ListItemButton>
-                                      <ListItemText primary={item.dsname} secondary={item.space + " bytes"} />
+                                      <ListItemText primary={(index+1) + ". " + item.dsname} secondary={item.space + " bytes"} />
                                     </ListItemButton>
                                     {index !== sortedDS.length - 1 && <Divider />}
                                 </div>

@@ -65,7 +65,8 @@ const getHistoryTableData = (AccountID, callback) => {
     //     datastructures.DSBatch DESC, 
     //     actionresults.ActionSet DESC;`
 
-    const query = `
+    const query = 
+    `
     SELECT 
     ROW_NUMBER() OVER (ORDER BY d.DSBatch DESC, a.ActionSet DESC) AS RowNumber,
     d.*,
@@ -76,16 +77,17 @@ const getHistoryTableData = (AccountID, callback) => {
         (
             SELECT 
                 *,
-                ROW_NUMBER() OVER (PARTITION BY DSBatch, ActionSet ORDER BY ActionNumber) AS rn
+                ROW_NUMBER() OVER (PARTITION BY DSBatch, ActionSet, AccountID ORDER BY ActionNumber) AS rn
             FROM 
                 actionresults
-        ) a ON a.DSID = d.DSID
+        ) a ON a.DSID = d.DSID AND a.AccountID = d.AccountID
     WHERE 
         d.AccountID = ?
         AND (a.rn = 1 OR a.rn IS NULL)
     ORDER BY 
         d.DSBatch DESC, 
-        a.ActionSet DESC;`
+        a.ActionSet DESC;
+    `
     
     const values = [AccountID]
 
