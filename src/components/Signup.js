@@ -117,11 +117,11 @@ const Signup = () => {
             // const data = {}
 
             // checks wheter email is already registered 
-            let response = await axios.post(`http://${domain}/signup`, {data});
+            let response = await axios.post(`${domain}/signup`, {data});
             
             if (!response.data[0]) { // no account yet, register the credentials
-                let createdAccountResult = await axios.post(`http://${domain}/signup/createAccount`, {data});
-                response = await axios.post(`http://${domain}/signup`, {data});           
+                let createdAccountResult = await axios.post(`${domain}/signup/createAccount`, {data});
+                response = await axios.post(`${domain}/signup`, {data});           
             } 
 
             let AccountStatus = response.data[0].AccountStatus

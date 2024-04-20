@@ -241,7 +241,6 @@ const CRUD = ({display, charts}) => {
         
         const fetchData = async () => {
             try {                
-                console.log(userDetails, "userDetails")
                 //get the last actions and datastructure 
                 let response = await axios.post(`${domain}/analytics`, {userDetails});
 
@@ -539,8 +538,8 @@ const AddDialog = ({addModal, maxIndex, datastructures, updatedsdetails, execute
                     </div>
 
                     <div className="relative">
-                        <label htmlFor="add-index-count" className=" bg-white text-sm font-medium leading-6 text-gray-900">Count (number of item to be added)</label>
-                        <input required type="number" name="count" value={countInput} onChange={handleInputChangeCount} min={1} placeholder={"e.g. '10'"} id="add-index-count" autoComplete="given-name" className="block w-full rounded-md border-0 p-2 text-gray-900 shadow-sm ring-1 
+                        <label htmlFor="add-index-count" className=" bg-white text-sm font-medium leading-6 text-gray-900">Count (number of item to be added; server limit is 3000)</label>
+                        <input required type="number" name="count" value={countInput} onChange={handleInputChangeCount} min={1} max={3000} placeholder={"e.g. '10'"} id="add-index-count" autoComplete="given-name" className="block w-full rounded-md border-0 p-2 text-gray-900 shadow-sm ring-1 
                         ring-inset ring-gray-300 placeholder:text-gray-400 border-none focus:ring-2 focus:ring-inset outline-none focus:ring-indigo-400 sm:text-sm sm:leading-6"/>
                     </div>
 
@@ -777,8 +776,8 @@ const GetDialog = ({getModal, maxIndex, datastructures, updatedsdetails, execute
                     </div>
 
                     <div className="relative">
-                        <label htmlFor="get-index-count" className=" bg-white text-sm font-medium leading-6 text-gray-900">To Index</label>
-                        <input type="number" name="count" value={countInput} onChange={handleInputChangeCount} min={0} placeholder={"e.g. '10'"} id="get-index-count" autoComplete="given-name" className="block w-full rounded-md border-0 p-2 text-gray-900 shadow-sm ring-1 
+                        <label htmlFor="get-index-count" className=" bg-white text-sm font-medium leading-6 text-gray-900">To Index (server limit is 3000)</label>
+                        <input type="number" name="count" value={countInput} onChange={handleInputChangeCount} min={0} max={3000} placeholder={"e.g. '10'"} id="get-index-count" autoComplete="given-name" className="block w-full rounded-md border-0 p-2 text-gray-900 shadow-sm ring-1 
                         ring-inset ring-gray-300 placeholder:text-gray-400 border-none focus:ring-2 focus:ring-inset outline-none focus:ring-indigo-400 sm:text-sm sm:leading-6"/>
                     </div>
 
@@ -1010,8 +1009,8 @@ const DeleteDialog = ({deleteModal, maxIndex, datastructures, updatedsdetails, e
                     </div>
 
                     <div className="relative">
-                        <label htmlFor="delete-index-count" className=" bg-white text-sm font-medium leading-6 text-gray-900">To Index</label>
-                        <input type="number" name="count" value={countInput} onChange={handleInputChangeCount} min={0} placeholder={"e.g. '10'"} id="delete-index-count" autoComplete="given-name" className="block w-full rounded-md border-0 p-2 text-gray-900 shadow-sm ring-1 
+                        <label htmlFor="delete-index-count" className=" bg-white text-sm font-medium leading-6 text-gray-900">To Index (server limit is 3000)</label>
+                        <input type="number" name="count" value={countInput} onChange={handleInputChangeCount} min={0} max={3000} placeholder={"e.g. '10'"} id="delete-index-count" autoComplete="given-name" className="block w-full rounded-md border-0 p-2 text-gray-900 shadow-sm ring-1 
                         ring-inset ring-gray-300 placeholder:text-gray-400 border-none focus:ring-2 focus:ring-inset outline-none focus:ring-indigo-400 sm:text-sm sm:leading-6"/>
                     </div>
 
@@ -1563,9 +1562,11 @@ const DSDetailsItems = ({title, value, unit, dsDetails, dsIndex}) => {
             <Tooltip title="Last action summary">
                 <img src={about} onClick={openDialog} className='w-[1.5rem] absolute left-1 top-1 cursor-pointer'></img>
             </Tooltip>
-            <Tooltip title="Next data">
-                <img src={next} onClick={speedNext} className='w-[1.6rem] absolute right-1 top-1 cursor-pointer'></img>
-            </Tooltip>
+            {title[index] !== "Threads" ? ( // dont load next button if its threads
+                <Tooltip title="Next data">
+                    <img src={next} onClick={speedNext} className='w-[1.6rem] absolute right-1 top-1 cursor-pointer'></img>
+                </Tooltip>
+            ) : null}
             <div className='flex flex-col w-full h-full justify-center items-center flex-[7]'>
                 <h1 className='flex-[8] flex justify-center items-center text-[1.5rem] font-bold relative top-3'>
                     {value[index] === null ? "N/A" : value[index]}
@@ -1647,25 +1648,28 @@ const SortHeader = () => {
 
             <div className="flex w-full">
                 <Stack direction="row" justifyContent="flex-start" alignItems="center" spacing={3} marginX={4} width={"100%"}>
-                    <FormControl sx={{ minWidth: 200 }} size="small">
-                        <InputLabel id="demo-select-small-label">Sort by</InputLabel>
-                        <Select
-                            labelId="demo-select-small-label"
-                            id="demo-select-small"
-                            value={age}
-                            label="Sort by"
-                            onChange={handleChange}
-                        >
-                            <MenuItem value="">
-                            <em>None</em>
-                            </MenuItem>
-                            <MenuItem value={10}>Ten</MenuItem>
-                            <MenuItem value={20}>Twenty</MenuItem>
-                            <MenuItem value={30}>Thirty</MenuItem>
-                        </Select>
-                    </FormControl>
+                    <Tooltip title="Component is under maintenance">
+                        <FormControl sx={{ minWidth: 200 }} size="small">
+                            <InputLabel id="demo-select-small-label">Sort by</InputLabel>
+                            <Select
+                                labelId="demo-select-small-label"
+                                id="demo-select-small"
+                                value={age}
+                                label="Sort by"
+                                onChange={handleChange}
+                            >
+                                <MenuItem value="">
+                                <em>None</em>
+                                </MenuItem>
+                                <MenuItem value={10}>Type</MenuItem>
+                                <MenuItem value={20}>Name</MenuItem>
+                                <MenuItem value={30}>Speed</MenuItem>
+                                <MenuItem value={30}>Memory</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </Tooltip>
 
-                    <FormControl sx={{ minWidth: 200 }} size="small">
+                    {/* <FormControl sx={{ minWidth: 200 }} size="small">
                         <InputLabel id="demo-select-small-label">Group by</InputLabel>
                         <Select
                             labelId="demo-select-small-label"
@@ -1681,31 +1685,35 @@ const SortHeader = () => {
                             <MenuItem value={20}>Twenty</MenuItem>
                             <MenuItem value={30}>Thirty</MenuItem>
                         </Select>
-                    </FormControl>
+                    </FormControl> */}
 
-                    <ToggleButtonGroup
-                        color="primary"
-                        value={alignment}
-                        exclusive
-                        onChange={handleAlignmentChange}
-                        aria-label="Platform"
-                        sx={{height: "65%"}}
-                        >
-                        <ToggleButton value="web">Ascending</ToggleButton>
-                        <ToggleButton value="ios">Descending</ToggleButton>
-                    </ToggleButtonGroup>
+                    <Tooltip title="Component is under maintenance">
+                        <ToggleButtonGroup
+                            color="primary"
+                            value={alignment}
+                            exclusive
+                            onChange={handleAlignmentChange}
+                            aria-label="Platform"
+                            sx={{height: "65%"}}
+                            >
+                            <ToggleButton value="web">Ascending</ToggleButton>
+                            <ToggleButton value="ios">Descending</ToggleButton>
+                        </ToggleButtonGroup>
+                    </Tooltip>
                 </Stack>
 
                 <Stack direction="row" justifyContent="flex-end" alignItems="center" spacing={0} marginX={3} width={"100%"}>
-                    <Search size="large">
-                        <SearchIconWrapper>
-                        <SearchIcon />
-                        </SearchIconWrapper>
-                        <StyledInputBase
-                        placeholder="Search…"
-                        inputProps={{ 'aria-label': 'search' }}
-                        />
-                    </Search>
+                    <Tooltip title="Component is under maintenance">
+                        <Search size="large">
+                            <SearchIconWrapper>
+                            <SearchIcon />
+                            </SearchIconWrapper>
+                            <StyledInputBase
+                            placeholder="Search…"
+                            inputProps={{ 'aria-label': 'search' }}
+                            />
+                        </Search>
+                    </Tooltip>
                 </Stack>
             </div>
         </section>

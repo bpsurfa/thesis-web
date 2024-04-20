@@ -1,22 +1,41 @@
 const { con } = require('./Connection');
 const { initializeDS } = require('./DataStructuresQueries')
+const bcrypt = require('bcrypt');
 
+const checkExistingAccount = async (userData, callback) => {
+    const query = `SELECT * FROM accounts WHERE Email = ? AND Origin = ?`;
 
-//functions for queries
-const checkExistingAccount = (userData, callback) => {
-    const query = 
-    `SELECT * 
-    FROM accounts 
-    WHERE Email = ? AND Password = ? AND Origin = ?`
-    
-    con.query(query, [userData.Email, userData.Password, userData.Origin], (err, results) => {
-        if (err) {
-            console.error('Error executing query:', err);
-            callback(err, null);
-        } else {
-            callback(null, results);
+    try {
+        // Execute the query to retrieve the account information
+        const results = await new Promise((resolve, reject) => {
+            con.query(query, [userData.Email, userData.Origin], (err, results) => {
+                if (err) {
+                    reject(err); // Reject the promise if an error occurs
+                } else {
+                    resolve(results); // Resolve the promise with the query results
+                }
+            });
+        });
+
+        // If no matching account found, return empty results
+        if (results.length === 0) {
+            callback(null, []);
+            return;
         }
-    });
+
+        // Compare the hashed password from the database with the input password
+        const match = await bcrypt.compare(userData.Password, results[0].Password);
+
+        // Pass the results back to the callback
+        if (match) {
+            callback(null, results);
+        } else {
+            callback(null, []);
+        }
+    } catch (error) {
+        console.error('Error executing query:', error);
+        callback(error, null); // Pass the error to the callback
+    }
 }
 
 const checkExistingEmail = (userData, callback) => {
@@ -37,8 +56,13 @@ const checkExistingEmail = (userData, callback) => {
 
 const createAccount = async (userData, callback) => {
     try{
+        // Hash the password
+        const saltRounds = 10;
+        
+        const hashedPassword = userData.Password ? await bcrypt.hash(userData.Password, saltRounds) : null;
+        
         const query = "INSERT INTO `accounts` (`Email`, `Password`, `isVerified`, `ExpirationDate`, `Firstname`, `Lastname`, `Origin`, `Role`, `AccountStatus`) VALUES (?, ?, '1', current_timestamp(), ?, ?, ?, ?, ?);"
-        const values = [userData.Email, userData.Password, userData.Firstname, userData.Lastname, userData.Origin, userData.Role, userData.AccountStatus]
+        const values = [userData.Email, hashedPassword, userData.Firstname, userData.Lastname, userData.Origin, userData.Role, userData.AccountStatus]
     
         let accountID
 
@@ -87,22 +111,32 @@ const updateLastUsedDSBatch = (data, callback) => {
     });
 }
 
-const updateUserDetails = (data, callback) => {
-    const query = `
-    UPDATE accounts
-    SET Email = ?, Password = ?, Firstname = ?, Lastname = ?
-    WHERE AccountID = ?;`
+const updateUserDetails = async (data, callback) => {
+    try {
+        // Hash the new password
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(data.Password, saltRounds);
 
-    const values = [data.Email, data.Password, data.Firstname, data.Lastname, data.AccountID]
+        const query = `
+        UPDATE accounts
+        SET Email = ?, Password = ?, Firstname = ?, Lastname = ?
+        WHERE AccountID = ?;`;
 
-    con.query(query, values, (err, results) => {
-        if (err) {
-            console.error('Error executing query:', err);
-            callback(err, null);
-        } else {
-            callback(null, results);
-        }
-    });
+        const values = [data.Email, hashedPassword, data.Firstname, data.Lastname, data.AccountID];
+
+        // Execute the query to update the user details
+        con.query(query, values, (err, results) => {
+            if (err) {
+                console.error('Error executing query:', err);
+                callback(err, null);
+            } else {
+                callback(null, results);
+            }
+        });
+    } catch (error) {
+        console.error('Error hashing password:', error);
+        callback(error, null);
+    }
 }
 
 const getAllAccounts = (callback) => {

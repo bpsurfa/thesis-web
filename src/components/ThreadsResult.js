@@ -169,7 +169,7 @@ export default function ThreadsResult() {
                   <div className='flex-[7] flex flex-col gap-3'>
                       <h2>Action: {dstructures[0].actiontype} </h2>
                       <h2>Starting Index: {dstructures[0].actioninput}</h2>
-                      <h2>Ending Index: {dstructures[0].actioncount}</h2>
+                      <h2>{dstructures[0].actiontype === "Add" ? "Count:" : "Ending Index:"} {dstructures[0].actioncount}</h2>
                       <h2>Action Direction: {dstructures[0].inputparameters}</h2>
                   </div>
                   

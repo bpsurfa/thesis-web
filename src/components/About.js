@@ -73,7 +73,7 @@ const About = ({display}) => {
     }
 
     return(
-        <div className={`${display} h-full w-full rounded-ss-[8px] rounded-ee-[8px] bg-red-50`}>
+        <div className={`${display} h-full w-full max-h-[100vh] rounded-ss-[8px] rounded-ee-[8px] bg-red-50`}>
             <main className="w-full h-full flex items-center justify-center px-[6%] gap-5">
                 <section className="w-full h-full max-h-[75%]">
                     <div className="w-full h-full bg-gray-100 shadow3 rounded box-border flex flex-col">
@@ -94,7 +94,19 @@ const About = ({display}) => {
 
                                     </li>
                                     
-                                    <li> This idea is brought by <a href="facebook.com" className="text-blue-700">Ralph Matthew De Leon</a>.</li>
+                                    <li> This idea is brought by <a href="https://www.facebook.com/ralphmatthew.deleon.5" className="text-blue-700">Ralph Matthew De Leon</a>.</li>
+                                </div >
+                            </div>
+
+                            <div className="flex flex-col gap-5">
+                                <h1 className='text-[1.3rem] font-bold'>What's next?</h1>
+                                
+                                <div className='flex flex-col gap-2 text-justify'>
+                                    <li> 
+                                        TreeList: A custom list that imitates how a binary search tree works. It adds a pivot pointer every 'frequency' 
+                                        items added exactly at the middle of the list. Pivot pointers are also maintained at said placements. By adding pivot 
+                                        pointers at the middle of every pivot pointers, we can traverse the tree in binary search tree manner.
+                                    </li>
                                 </div >
                             </div>
 
@@ -103,19 +115,17 @@ const About = ({display}) => {
                                 
                                 <div className='flex flex-col gap-2 text-justify'>
                                 <li> Ralph Matthew De Leon ( 
-                                    <a href="facebook.com" className="text-blue-700"> GitHub </a>, 
-                                    <a href="facebook.com" className="text-blue-700"> LinkedIn </a>,
-                                    <a href="facebook.com" className="text-blue-700"> rmdldeleon@gmail.com </a>) 
+                                    <a href="https://www.facebook.com/ralphmatthew.deleon.5" className="text-blue-700"> GitHub </a>, 
+                                    <a href="https://github.com/rmdldeleon" className="text-blue-700"> LinkedIn </a>,
+                                    <a href="mailto:rmdldeleon@gmail.com" className="text-blue-700"> rmdldeleon@gmail.com </a>) 
                                 </li>
                                 <li> Sebastian Miguel San Pedro ( 
-                                    <a href="facebook.com" className="text-blue-700"> GitHub </a>, 
-                                    <a href="facebook.com" className="text-blue-700"> LinkedIn </a>,
-                                    <a href="facebook.com" className="text-blue-700"> rmdldeleon@gmail.com </a>) 
+                                    <a href="https://github.com/SanPedroSebastian?fbclid=IwAR1EM4hltfbcGJSbGZA5fBZkYrRz-iGB6FpagI2lpQvmWd5q_wr42eioXK0" className="text-blue-700"> GitHub </a>, 
+                                    <a href="https://www.linkedin.com/authwall?trk=bf&trkInfo=AQEA2a_lbE6WKwAAAY7sP8zg--iNOu5B0HbG5LhI6keZHyPLX1OVsqqZkon7RG8Z7tfW4chuPUOJ6tq4j8o-rmZZqvtNXQSUIZoOBhWs7XG-NkBQKsti70_JbYft8CuAAIkW4Cs=&original_referer=&sessionRedirect=https%3A%2F%2Fwww.linkedin.com%2Fin%2Fsebastian-san-pedro-682156230%3Futm_source%3Dshare%26utm_campaign%3Dshare_via%26utm_content%3Dprofile%26utm_medium%3Dandroid_app" className="text-blue-700"> LinkedIn </a>,
+                                    <a href="mailto:smdsp@gmail.com" className="text-blue-700"> smdsp@gmail.com </a>) 
                                 </li>
                                 <li> Kurt Devin Dionisio ( 
-                                    <a href="facebook.com" className="text-blue-700"> GitHub </a>, 
-                                    <a href="facebook.com" className="text-blue-700"> LinkedIn </a>,
-                                    <a href="facebook.com" className="text-blue-700"> rmdldeleon@gmail.com </a>) 
+                                    <a href="kdbd@gmail.com" className="text-blue-700"> kdbd@gmail.com </a>) 
                                 </li>
                                 </div >
                             </div>
@@ -130,18 +140,18 @@ const About = ({display}) => {
                         </div>
 
                         <div className="h-full w-full overflow-auto">
-                            <form ref={formRef} onSubmit={handleSubmit} className="w-full h-full flex flex-col items-center justify-center">
-                                
-                                <div className="w-[75%] h-[20%] flex items-center justify-center text-center">
-                                    <h1 className="text-[1.1rem]"> Alternatively, you can email us at <a href="facebook.com" className="text-blue-700">thesislist_admin@gmail.com</a> </h1>
+                            <form ref={formRef} onSubmit={handleSubmit} className="w-full h-full flex flex-col items-center">
+                                <div className="w-[75%] h-[20%] min-h-[150px] flex items-center justify-center text-center">
+                                    <h1 className="text-[1.1rem]"> Alternatively, you can email us at <a href="facebook.com" className="text-blue-700">customlist_admin@gmail.com</a> </h1>
                                 </div>
 
-                                <div className="w-[75%] h-full flex flex-col items-center justify-start gap-1">
+                                <div className="w-[75%] h-[80%] min-h-[500px] flex flex-col items-center justify-start gap-1">
                                     <TextField
                                         label="Email (We will use this to contact you)"
                                         name="email"
                                         variant="outlined"
                                         margin="normal"
+                                        defaultValue={userDetails.Email || null}
                                         sx={{width:"70%", minWidth: "325px", maxWidth: "400px"}}
                                         required
                                         InputProps={{

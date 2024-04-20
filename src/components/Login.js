@@ -23,6 +23,7 @@ import FrequencyListV2 from "../datastructures/FrequencyListV2"
 
 import '../css/index.css';
 
+
 const Login = () => {
     const domain = 'localhost:3001'
 
@@ -67,9 +68,9 @@ const Login = () => {
     const onSubmit = async (data) => {
         try {
             data.Origin = "Website"
-            
+    
             const response = await axios.post(`http://${domain}/login`, {data,});
-            console.log(response)
+
             let AccountStatus = response.data[0] ? response.data[0].AccountStatus : ''
 
             if(!response.data[0]){ // if array is empty
