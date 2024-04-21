@@ -56,6 +56,7 @@ import FrequencyListV2Dialog from "./FrequencyListV2Dialog";
 
 // imported contexts
 import { domainContext, dstructuresContext, AlertDialogContext } from "./mainpage";
+import { orderBy } from "lodash";
 
 //data context
 const DialogContext = createContext();
@@ -219,7 +220,6 @@ const CRUD = ({display, charts}) => {
             dsarr.push(dsobject)
         }
 
- 
         setdstructures(dsarr)
     }
 
@@ -264,7 +264,7 @@ const CRUD = ({display, charts}) => {
         <ThreadsDialog.Provider value={[threadsDialog, setThreadsDialog, dstructures, openedDSDetails, setOpenedDSDetails]}>
         <MemoryDialog.Provider value={[memoryDialog, setMemoryDialog, dstructures, openedDSDetails, setOpenedDSDetails]}>
             <section className={`${display} bg-[#f8f8fa] h-full w-full rounded-ss-[20px] flex flex-col rounded-ee-[8px]`}>
-                <SortHeader />
+                <SortHeader updatedsdetails={updatedsdetails} dstructures={dstructures}/>
                 <ResetDialog />
                 <LastActionResult />
                 <SpeedResult />
@@ -282,14 +282,13 @@ const CRUD = ({display, charts}) => {
         
                     <div className='flex-1 relative max-h-full max-w-full py-1 overflow-hidden'>
                         <main className='absolute h-full w-full overflow-y-scroll px-5'>
-                            {/* <DSDetails dsDetails={dstructures[0]}/>
-                            <DSDetails dsDetails={dstructures[1]}/>
-                            <DSDetails dsDetails={dstructures[2]}/> */}
+
                             {dstructures.map((item, index) => (
                                 <DSDetails key={index} dsDetails={item} index={index}/>
                             ))}
-                            <DSDetails dsDetails={{}}/>
-                            <DSDetails dsDetails={{}}/>
+
+                            {/* <DSDetails dsDetails={{}}/>
+                            <DSDetails dsDetails={{}}/> */}
                         </main>
                     </div> 
                 </div>
@@ -1585,8 +1584,9 @@ const DSDetailsItems = ({title, value, unit, dsDetails, dsIndex}) => {
     ) 
 }
 
-const SortHeader = () => {
-    const [age, setAge] = React.useState(''); // for dropdowns or filters
+const SortHeader = ({updatedsdetails, dstructures}) => {
+    const [sortBy, setSortBy] = React.useState('type');
+    const [orderBy, setOrderBy] = React.useState('dsc');
 
     //styles
     const Search = styled('div')(({ theme }) => ({
@@ -1632,15 +1632,61 @@ const SortHeader = () => {
         },
       }));
 
-    const handleChange = (event) => { // dropdowns or filters
-        setAge(event.target.value);
+    const handleSortByChange = (event) => { // dropdowns or filters
+        setSortBy(event.target.value)
     };
 
-    const [alignment, setAlignment] = React.useState('web');
-
-    const handleAlignmentChange = (event, newAlignment) => {
-        setAlignment(newAlignment);
+    const handleOrderByChange = (event, newOrderBy) => {
+        setOrderBy(newOrderBy || orderBy)
     };
+
+    useEffect(() => {
+        let sortedArray
+
+        if(sortBy === "type"){
+            if(!dstructures[0].type) return () => {};
+            
+            if(orderBy === "dsc"){
+                sortedArray = dstructures.sort((a, b) => a.type.localeCompare(b.type));
+            }else{
+                sortedArray = dstructures.sort((a, b) => b.type.localeCompare(a.type));
+            }
+        }else if(sortBy === "name"){
+            if(!dstructures[0].dsname) return () => {};
+            
+            if(orderBy === "dsc"){
+                sortedArray = dstructures.sort((a, b) => a.dsname.localeCompare(b.dsname));
+            }else{
+                sortedArray = dstructures.sort((a, b) => b.dsname.localeCompare(a.dsname));
+            }
+        }else if(sortBy === "speed"){
+            if(!dstructures[0].speedms) return () => {};
+            
+            if(orderBy === "dsc"){
+                sortedArray = dstructures.sort((a, b) => b.speedms - a.speedms);
+            }else{
+                sortedArray = dstructures.sort((a, b) => a.speedms - b.speedms);
+            }
+        }else if(sortBy === "memory"){
+            if(!dstructures[0].space) return () => {};
+            
+            if(orderBy === "dsc"){
+                sortedArray = dstructures.sort((a, b) => b.space - a.space);
+            }else{
+                sortedArray = dstructures.sort((a, b) => a.space - b.space);
+            }
+        }
+
+        updatedsdetails(sortedArray)
+    }, [sortBy, orderBy])
+
+    useEffect(() => {
+        // return sort components to default values after reset
+        if(dstructures[0].speedms === null){
+            setSortBy('type');
+            setOrderBy('dsc');
+        }
+    }, [dstructures])
     
     return(
         <section className='bg-[#f8f8fa] h-16 w-full flex rounded-ss-[8px] shadow z-10'>
@@ -1648,26 +1694,27 @@ const SortHeader = () => {
 
             <div className="flex w-full">
                 <Stack direction="row" justifyContent="flex-start" alignItems="center" spacing={3} marginX={4} width={"100%"}>
-                    <Tooltip title="Component is under maintenance">
+                    {/* <Tooltip title="Component is under maintenance"> */}
                         <FormControl sx={{ minWidth: 200 }} size="small">
                             <InputLabel id="demo-select-small-label">Sort by</InputLabel>
                             <Select
                                 labelId="demo-select-small-label"
                                 id="demo-select-small"
-                                value={age}
+                                value={sortBy}
                                 label="Sort by"
-                                onChange={handleChange}
+                                disabled={dstructures[0].speedms === null ? true : false}
+                                onChange={handleSortByChange}
                             >
-                                <MenuItem value="">
+                                {/* <MenuItem value="">
                                 <em>None</em>
-                                </MenuItem>
-                                <MenuItem value={10}>Type</MenuItem>
-                                <MenuItem value={20}>Name</MenuItem>
-                                <MenuItem value={30}>Speed</MenuItem>
-                                <MenuItem value={30}>Memory</MenuItem>
+                                </MenuItem> */}
+                                <MenuItem value={"type"}>Type</MenuItem>
+                                <MenuItem value={"name"}>Name</MenuItem>
+                                <MenuItem value={"speed"}>Speed</MenuItem>
+                                <MenuItem value={"memory"}>Memory</MenuItem>
                             </Select>
                         </FormControl>
-                    </Tooltip>
+                    {/* </Tooltip> */}
 
                     {/* <FormControl sx={{ minWidth: 200 }} size="small">
                         <InputLabel id="demo-select-small-label">Group by</InputLabel>
@@ -1687,19 +1734,20 @@ const SortHeader = () => {
                         </Select>
                     </FormControl> */}
 
-                    <Tooltip title="Component is under maintenance">
+                    {/* <Tooltip title="Component is under maintenance"> */}
                         <ToggleButtonGroup
                             color="primary"
-                            value={alignment}
+                            value={orderBy}
                             exclusive
-                            onChange={handleAlignmentChange}
+                            onChange={handleOrderByChange}
                             aria-label="Platform"
+                            disabled={dstructures[0].speedms === null ? true : false}
                             sx={{height: "65%"}}
                             >
-                            <ToggleButton value="web">Ascending</ToggleButton>
-                            <ToggleButton value="ios">Descending</ToggleButton>
+                            <ToggleButton value="asc">Ascending</ToggleButton>
+                            <ToggleButton value="dsc">Descending</ToggleButton>
                         </ToggleButtonGroup>
-                    </Tooltip>
+                    {/* </Tooltip> */}
                 </Stack>
 
                 <Stack direction="row" justifyContent="flex-end" alignItems="center" spacing={0} marginX={3} width={"100%"}>
