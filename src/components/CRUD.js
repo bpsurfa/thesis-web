@@ -1483,7 +1483,17 @@ const DSDetails = ({dsDetails, index}) => {
 
                 <div className='flex-[1] grid grid-cols-2 grid-rows-3 justify-items-left text-sm left-12 relative text-gray-500'>
                     <h4>Threaded: <span className='font-bold text-gray-600 text-md float'>{dsDetails.threaded === 0 ? "FALSE" : "TRUE"}</span></h4>
-                    <h4>{dsDetails.dsname === "Dynamic Array" ? "Capacity:" : "Frequency:"} <span className='font-bold text-gray-600 text-md'>{dsDetails.frequency || dsDetails.capacity || 0}</span></h4>
+                    <Tooltip 
+                        title={
+                            dsDetails.dsname === "Dynamic Array" ? 
+                            "A special property of traditional arrays. The maximum number of items the array can hold before it create and move to a larger array." : 
+                            "A special property of custom linked lists. Determines how often a pivot pointer is added."
+                        }
+                    >
+                        <h4>{dsDetails.dsname === "Dynamic Array" ? "Capacity: " : "Frequency: "} 
+                            <span className='font-bold text-gray-600 text-md'>{dsDetails.frequency || dsDetails.capacity || 0}</span>
+                        </h4>
+                    </Tooltip>
                     <h4>Type: <span className='font-bold text-gray-600 text-md'>{dsDetails.type}</span></h4>
                     {/* {dsDetails.dsname === "Dynamic Array" ? null : <h4>User-added Pivot: <span className='font-bold text-gray-600 text-md'>{dsDetails.userpivot}</span></h4>} */}
                 </div>
@@ -1519,6 +1529,8 @@ const DSDetailsItems = ({title, value, unit, dsDetails, dsIndex}) => {
 
     const speedNext = () => {
         let size = value.length
+
+        console.log(title, value)
 
         if(index === size-1){
             setIndex(0)
@@ -1557,30 +1569,46 @@ const DSDetailsItems = ({title, value, unit, dsDetails, dsIndex}) => {
     }
 
     return(
-        <div className='relative bg-[#ffffff80] min-h-full w-[200px] min-w-[200px] rounded-lg flex flex-col shadow1'>
-            <Tooltip title="Last action summary">
-                <img src={about} onClick={openDialog} className='w-[1.5rem] absolute left-1 top-1 cursor-pointer'></img>
-            </Tooltip>
-            {title[index] !== "Threads" ? ( // dont load next button if its threads
-                <Tooltip title="Next data">
-                    <img src={next} onClick={speedNext} className='w-[1.6rem] absolute right-1 top-1 cursor-pointer'></img>
+        <Tooltip 
+            title={
+                title[index] === "Speed" ? "Total execution time of the last action" : 
+                title[index] === "Time Complexity" ? "Worst case Big O notation of time complexity from the last action" :
+                title[index] === "Capacity Added" ? "Number of capacity added from the last action" :
+                title[index] === "Size" ? "Number of items this datastructure is currently holding" :
+                title[index] === "Pivot Count" ? "Number of pivot pointers this datastructure is currently holding" :
+                title[index] === "Size Added" ? "Number of items added or deleted from the last action" :
+                title[index] === "Pointers Added" ? "Number of pivot pointers added or deleted from the last action" :
+                title[index] === "Threads" ? "Number of threads used from the last action" :
+                title[index] === "Memory" ? "Total number of space allocated by this datastructure" :
+                title[index] === "Space Complexity" ? "Worst case Big O notation of space complexity from the last action" :
+                title[index] === "Memory Added" ? "Number of space allocated added from the last action" : ""
+            }
+        >
+            <div className='relative bg-[#ffffff80] min-h-full w-[200px] min-w-[200px] rounded-lg flex flex-col shadow1'> 
+                <Tooltip title="Last action summary">
+                    <img src={about} onClick={openDialog} className='w-[1.5rem] absolute left-1 top-1 cursor-pointer'></img>
                 </Tooltip>
-            ) : null}
-            <div className='flex flex-col w-full h-full justify-center items-center flex-[7]'>
-                <h1 className='flex-[8] flex justify-center items-center text-[1.5rem] font-bold relative top-3'>
-                    {value[index] === null ? "N/A" : value[index]}
-                </h1>
-                <h2 className='flex-[3] text-gray-500'>
-                    {unit[index]}
-                </h2>
-            </div>
+                {title[index] !== "Threads" ? ( // dont load next button if its threads
+                    <Tooltip title="Next data">
+                        <img src={next} onClick={speedNext} className='w-[1.6rem] absolute right-1 top-1 cursor-pointer'></img>
+                    </Tooltip>
+                ) : null}
+                <div className='flex flex-col w-full h-full justify-center items-center flex-[7]'>
+                    <h1 className='flex-[8] flex justify-center items-center text-[1.5rem] font-bold relative top-3'>
+                        {value[index] === null ? "N/A" : value[index]}
+                    </h1>
+                    <h2 className='flex-[3] text-gray-500'>
+                        {unit[index]}
+                    </h2>
+                </div>
 
-            <div className='shadow w-full h-full flex-[3] flex justify-center items-center bg-slate-200 rounded-es-lg rounded-ee-lg font-semibold text-gray-800'>
-                <h2 className=''>
-                    {title[index]}
-                </h2>
+                <div className='shadow w-full h-full flex-[3] flex justify-center items-center bg-slate-200 rounded-es-lg rounded-ee-lg font-semibold text-gray-800'>
+                    <h2 className=''>
+                        {title[index]}
+                    </h2>
+                </div>
             </div>
-        </div>
+        </Tooltip>
     ) 
 }
 

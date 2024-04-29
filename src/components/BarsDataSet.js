@@ -34,7 +34,7 @@ export default function BarsDataset() {
   const options = {
     backgroundColor: "rgba(0,0,0,0)",
     title: {
-      text: "Last Action Resut"
+      text: "Last Action Result"
     },
     exportEnabled: true,
     responsive: true,

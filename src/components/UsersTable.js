@@ -104,6 +104,13 @@ export default function UsersTable() {
     const [selectedRow, setSelectedRow] = React.useState(undefined);
     const [rows, setRows] = React.useState(rowsData)
 
+    // Custom cell renderer to conditionally style cell text
+    const CustomCellRenderer = (params) => {
+      const { value } = params;
+      const cellStyle = value === 'Disabled' ? { color: 'red' } : {}; // Conditionally apply red color
+      return <div style={cellStyle}>{value}</div>;
+    };
+
     const handleSelectionChange = (selectedRowNumber) => {
  
         let row = rows.find((row) => row.accountID === selectedRowNumber[0])
@@ -161,7 +168,11 @@ export default function UsersTable() {
 
             <DataGrid
                 rows={rows}
-                columns={columns}
+                // columns={columns}
+                columns={columns.map((column) => ({
+                  ...column,
+                  renderCell: (params) => <CustomCellRenderer {...params} />, // Use custom cell renderer
+                }))}
                 autoPageSize
                 getRowId={(row) => row.accountID} 
                 disableVirtualization
