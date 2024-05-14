@@ -98,10 +98,13 @@ export default function ThreadsResult() {
             for(let i = 0; i < results.length; i++){
                 let currentIndex = results[i].currentIndex
                 let threads = results[i].threads
-                let diff = prev - threads // 1 2 = -1 // 2 1 = 1 // 2 2 = 0
+                let diff = threads - prev
                 let sign = diff >= 0 ? "+" : "-"
 
                 prev = threads
+
+                //formatting
+                diff = Math.abs(diff)
 
                 arr.push({currentIndex, threads, diff, sign})
             }
@@ -211,7 +214,7 @@ export default function ThreadsResult() {
            {/* All Runs */}
            <div className='bg-gray-50 shadow3 rounded h-full max-h-[400px] overflow-auto flex-1 flex flex-col'>
                 <h1 className='text-[1.5rem] font-bold text-center min-h-[20%] flex items-center justify-center'>
-                    All Runs (Speed)
+                    All Runs (Thread Count)
                 </h1>
 
                 <div className='w-full h-full'>
@@ -222,7 +225,7 @@ export default function ThreadsResult() {
                                   <ListItemText primary={"Index: " + item.currentIndex} secondary={"Threads Used: " + item.threads} />
 
                                   <Typography variant="body2" color="textSecondary">
-                                      {`(+ ${item.diff})`}
+                                      {`(${item.sign} ${item.diff})`}
                                   </Typography>
                                 </ListItemButton>
                                 {index !== allResults.length - 1 && <Divider />}

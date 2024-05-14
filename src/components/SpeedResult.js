@@ -104,7 +104,7 @@ export default function SpeedResult() {
           for(let i = 0; i < results.length; i++){
               let currentIndex = results[i].currentIndex
               let speedms = results[i].speedms
-              let diff = prevSpeedms - speedms // 1 2 = -1 // 2 1 = 1 // 2 2 = 0
+              let diff = prevSpeedms - speedms  // 1 2 = -1 // 2 1 = 1 // 2 2 = 0
               let sign = diff >= 0 ? "+" : "-"
 
               //formatting

@@ -42,6 +42,9 @@ import FrequencyListV1 from "../datastructures/FrequencyListV1"
 import FrequencyListV2 from "../datastructures/FrequencyListV2"
 import LinkedList from "../datastructures/LinkedList"
 import DynamicArray from "../datastructures/DynamicArray";
+import FrequencyListV2T from "../datastructures/FrequencyListV2T";
+import FrequencyListV1T from "../datastructures/FrequencyListV1T";
+import DynamicArrayT from "../datastructures/DynamicArrayT";
 
 import LastActionResult from "./LastActionResult";
 import SpeedResult from "./SpeedResult"
@@ -142,11 +145,23 @@ const CRUD = ({display, charts}) => {
             //         dsinstance = new TreeList(frequencycapacity || 100)
             //     }
             // }
-            if(result[i].DSName_CLSC === "Frequency List V2"){
+            if(result[i].DSName_CLSC === "Frequency List V2 T"){
+                if(result[i].JSONData){
+                    dsinstance = FrequencyListV2T.parse(result[i].JSONData)
+                }else{
+                    dsinstance = new FrequencyListV2T(frequencycapacity || 100)
+                }
+            }else if(result[i].DSName_CLSC === "Frequency List V2"){
                 if(result[i].JSONData){
                     dsinstance = FrequencyListV2.parse(result[i].JSONData)
                 }else{
                     dsinstance = new FrequencyListV2(frequencycapacity || 100)
+                }
+            }else if(result[i].DSName_CLSC === "Frequency List V1 T"){
+                if(result[i].JSONData){
+                    dsinstance = FrequencyListV1T.parse(result[i].JSONData)
+                }else{
+                    dsinstance = new FrequencyListV1T(frequencycapacity || 100)
                 }
             }else if(result[i].DSName_CLSC === "Frequency List V1"){
                 if(result[i].JSONData){
@@ -159,6 +174,12 @@ const CRUD = ({display, charts}) => {
                     dsinstance = LinkedList.parse(result[i].JSONData)
                 }else{
                     dsinstance = new LinkedList()
+                }
+            }else if(result[i].DSName_CLSC === "Dynamic Array T"){
+                if(result[i].JSONData){
+                    dsinstance = DynamicArrayT.parse(result[i].JSONData)
+                }else{
+                    dsinstance = new DynamicArrayT(frequencycapacity || 100)
                 }
             }else if(result[i].DSName_CLSC === "Dynamic Array"){
                 if(result[i].JSONData){
@@ -1415,13 +1436,13 @@ const DSDetails = ({dsDetails, index}) => {
     const [ frequencyListV2Dialog, setFrequencyListV2Dialog ] = useState(false)
 
     const print = () => {
-        if(dsDetails.dsname === "Dynamic Array"){
+        if(dsDetails.dsname === "Dynamic Array" || dsDetails.dsname === "Dynamic Array T"){
             setDynamicArrayDialog(true)
         }else if(dsDetails.dsname === "Doubly Linked List"){
             setDoublyLinkedListDialog(true)
-        }else if(dsDetails.dsname === "Frequency List V1"){
+        }else if(dsDetails.dsname === "Frequency List V1" || dsDetails.dsname === "Frequency List V1 T"){
             setFrequencyListV1Dialog(true)
-        }else if(dsDetails.dsname === "Frequency List V2"){
+        }else if(dsDetails.dsname === "Frequency List V2" || dsDetails.dsname === "Frequency List V2 T"){
             setFrequencyListV2Dialog(true)
         }
     }
@@ -1485,23 +1506,23 @@ const DSDetails = ({dsDetails, index}) => {
                     <h4>Threaded: <span className='font-bold text-gray-600 text-md float'>{dsDetails.threaded === 0 ? "FALSE" : "TRUE"}</span></h4>
                     <Tooltip 
                         title={
-                            dsDetails.dsname === "Dynamic Array" ? 
+                            dsDetails.dsname === "Dynamic Array T" ? 
                             "A special property of traditional arrays. The maximum number of items the array can hold before it create and move to a larger array." : 
                             "A special property of custom linked lists. Determines how often a pivot pointer is added."
                         }
                     >
-                        <h4>{dsDetails.dsname === "Dynamic Array" ? "Capacity: " : "Frequency: "} 
+                        <h4>{dsDetails.dsname === "Dynamic Array T" ? "Capacity: " : "Frequency: "} 
                             <span className='font-bold text-gray-600 text-md'>{dsDetails.frequency || dsDetails.capacity || 0}</span>
                         </h4>
                     </Tooltip>
                     <h4>Type: <span className='font-bold text-gray-600 text-md'>{dsDetails.type}</span></h4>
-                    {/* {dsDetails.dsname === "Dynamic Array" ? null : <h4>User-added Pivot: <span className='font-bold text-gray-600 text-md'>{dsDetails.userpivot}</span></h4>} */}
+                    {/* {dsDetails.dsname === "Dynamic Array T" ? null : <h4>User-added Pivot: <span className='font-bold text-gray-600 text-md'>{dsDetails.userpivot}</span></h4>} */}
                 </div>
             </div>
             
             <div className='h-full flex gap-10 py-4 px-4'>
                 <DSDetailsItems dsDetails={dsDetails} dsIndex={index} title={["Speed", "Time Complexity"]} value={[dsDetails.speedms, dsDetails.speednotation]} unit={["milliseconds", "Big-O"]}/>
-                <DSDetailsItems dsDetails={dsDetails} dsIndex={index} title={dsDetails.dsname !== "Dynamic Array" ? ["Size", "Pivot Count", "Size Added", "Pointers Added"] : ["Size", "Capacity Added"]} value={dsDetails.dsname !== "Dynamic Array" ? [dsDetails.size, dsDetails.sizepointers, dsDetails.sizeAdded, dsDetails.pointersAdded] : [dsDetails.size, dsDetails.sizeAdded]} unit={["count", "count", "count", "count"]}/>
+                <DSDetailsItems dsDetails={dsDetails} dsIndex={index} title={dsDetails.dsname !== "Dynamic Array T" ? ["Size", "Pivot Count", "Size Added", "Pointers Added"] : ["Size", "Capacity Added"]} value={dsDetails.dsname !== "Dynamic Array T" ? [dsDetails.size, dsDetails.sizepointers, dsDetails.sizeAdded, dsDetails.pointersAdded] : [dsDetails.size, dsDetails.sizeAdded]} unit={["count", "count", "count", "count"]}/>
                 <DSDetailsItems dsDetails={dsDetails} dsIndex={index} title={["Threads"]} value={[dsDetails.threads]} unit={["count"]}/>
                 <DSDetailsItems dsDetails={dsDetails} dsIndex={index} title={["Memory", "Space Complexity", "Memory Added"]} value={[dsDetails.space, dsDetails.spacenotation, dsDetails.spaceAdded]} unit={["bytes", "Big-O", "bytes"]}/>
             </div>
@@ -1578,7 +1599,7 @@ const DSDetailsItems = ({title, value, unit, dsDetails, dsIndex}) => {
                 title[index] === "Pivot Count" ? "Number of pivot pointers this datastructure is currently holding" :
                 title[index] === "Size Added" ? "Number of items added or deleted from the last action" :
                 title[index] === "Pointers Added" ? "Number of pivot pointers added or deleted from the last action" :
-                title[index] === "Threads" ? "Number of threads used from the last action" :
+                title[index] === "Threads" ? "Number of worker threads used from the last action. This does not include the main thread" :
                 title[index] === "Memory" ? "Total number of space allocated by this datastructure" :
                 title[index] === "Space Complexity" ? "Worst case Big O notation of space complexity from the last action" :
                 title[index] === "Memory Added" ? "Number of space allocated added from the last action" : ""

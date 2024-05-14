@@ -51,8 +51,8 @@ export default function FrequencyListV2Dialog({dsDetails, frequencyListV2Dialog,
 
   const handleDownload = () => {
     const link = document.createElement('a');
-    link.download = 'FrequencyListV2.js';
-    link.href = `${server}/FrequencyListV2.js`; 
+    link.download = 'FrequencyListV2T.js';
+    link.href = `${server}/FrequencyListV2T.js`; 
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -92,7 +92,7 @@ export default function FrequencyListV2Dialog({dsDetails, frequencyListV2Dialog,
               {dsDetails.dsname}
             </Typography>
 
-            <Tooltip title="Download the FrequencyListV2 class implementation in javascript">
+            <Tooltip title="Download the FrequencyListV2T class implementation in javascript">
               <Button autoFocus color="inherit" onClick={handleDownload}>
                 Download 
               </Button>
@@ -210,14 +210,14 @@ export default function FrequencyListV2Dialog({dsDetails, frequencyListV2Dialog,
             <section className='h-[50%] min-h-[400px] w-full flex gap-5 p-5'>
                 <div className='w-full h-full bg-gray-100 shadow3 rounded flex'>
                     <div className="min-w-[65%] w-full h-full flex flex-col overflow-auto ">
-                        <div className="flex-[1] min-h-[30%] text-[1.5rem] font-bold text-gray-800 flex items-end justify-center"> What is Frequency List V1 </div>
+                        <div className="flex-[1] min-h-[30%] text-[1.5rem] font-bold text-gray-800 flex items-end justify-center"> What is Frequency List V2 T</div>
                         <div className="flex-[2] text-[1rem] font-semibold text-gray-700 text-justify px-[10%] py-[5%] leading-loose"> 
-                            Frequency List V2 is a custom doubly linked list that involves putting a pivot pointer at the end of the list every 'frequency' number of items added. 
+                            Frequency List V2 T is a custom doubly linked list that involves putting a pivot pointer at the end of the list every 'frequency' number of items added. 
                             Pivot pointers are maintained at those indeces no matter the case, hence, the name Frequency List. Pivot Pointers are stored in an AVL Tree called PivotTree.
                             Head and Tail is also a pivot pointer but is not stored in PivotTree. It generally follows the same mechanics as Frequency List V1, 
                             with the only difference that AVL Tree is used to store the pivot pointers instead of an Array. The tree datastructure has its own node implementation where it
                             has a property for the key (index) and value for the stored list node. It is important to note that this version 
-                            naturally occupies more space due to having additional datastructure for pivot pointers.
+                            naturally occupies more space due to having additional datastructure for pivot pointers. The 'T' in the name indicates multi-threading capability.
                         </div>
                     </div>
 
@@ -248,7 +248,7 @@ export default function FrequencyListV2Dialog({dsDetails, frequencyListV2Dialog,
                                 <li> 
                                     For write operations such as addAfterIndex and delete that is done somewhere at the start to the middle of the index, the speed notation 
                                     in worst case O(n), where n is the number of pivot pointers. Pivot pointers must be maintained at 'frequency' indeces, thus, it has to traverse
-                                    the entirety of AVL Tree of pivot pointers to update the pointers.
+                                    the entirety of AVL Tree of pivot pointers to update the pointers. Multi-threading is applied to traverse left and right subtree simultaneously.
                                 </li>
                                 <li> 
                                     When write operations are done only at the end of the list (tail), there will be no need to update the pivot pointers as it wont change its position.

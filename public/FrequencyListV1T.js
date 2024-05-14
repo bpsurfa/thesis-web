@@ -1,3 +1,140 @@
+export class DynamicArrayT{
+    #capacity = null;
+    #size = 0; 
+    #array = []
+
+    // null = 4 bytes
+    // reference = 6 bytes
+    // number = 8 bytes
+
+    constructor(capacity){
+        this.#capacity = capacity
+
+        for(let i = 0; i < capacity; i++){
+            this.#array.push(null)
+        }
+    }
+    
+    // general functions
+    print(){
+       console.log("Array:", this.#array);
+       console.log("Array Properties:", this.#capacity, this.#size)
+    }
+
+    size(){
+        return this.#size
+    }
+
+    getCapacity(){
+        return this.#capacity
+    }
+
+    getArray(){
+        return this.#array
+    }
+
+    update(index, item){
+        this.#array[index] = item
+    }
+
+    fillWithNull(count){
+        for(let i = 0; i < count; i++){
+            this.#array.push(null)
+        }
+    }
+
+    add(item){
+        let index = this.#size;
+
+        if(this.isFull()){ // array is full and has to expand
+            this.#enlargeArray()
+        }
+        
+        this.#array[index] = item
+
+        this.#size += 1;
+    }
+
+    addAfterIndex(index, item){
+        if(this.isFull()){
+            this.#enlargeArray()
+        }
+
+        this.#moveItemsToRight(index+1)
+
+        this.#array[index+1] = item;
+
+        this.#size += 1;
+    }
+
+    addBeforeIndex(index, item){
+        if(this.isFull()){
+            this.#enlargeArray()
+        }
+
+        this.#moveItemsToRight(index)
+
+        this.#array[index] = item;
+
+        this.#size += 1;
+    }
+
+    pop(){
+        this.pivotArray[this.#size-1] = null
+        this.#size -= 1;
+    }
+
+    delete(index){
+        this.#moveItemsToLeft(index+1)
+        this.#array[this.#size-1] = null
+
+        this.#size -= 1;
+    }
+
+    get(index){
+        return this.#array[index];
+    }
+
+    isFull(){
+        return this.#size === this.#capacity
+    }
+
+    #enlargeArray(){
+        let newArr = []
+
+        let halfVal = Math.ceil(this.#size / 2);
+
+        const migrateFirstHalf = async () => {
+            // migrating first half values from orig to new array
+            for(let i = 0; i < halfVal; i++){
+                newArr.push(this.#array[i])
+            }
+        }
+    
+        migrateFirstHalf();
+
+        // migrating second half values from orig to new array
+        for(let i = halfVal; i < this.#size; i++){
+            newArr.push(this.#array[i])
+        }
+
+        this.#capacity *= 2;
+        this.#array = newArr
+    }
+
+    #moveItemsToRight(startingIndex){
+        for(let i = this.#size; i > startingIndex; i--){
+            this.#array[i] = this.#array[i-1]
+        }
+    }
+
+    #moveItemsToLeft(startingIndex){
+        for(let i = startingIndex; i < this.#size; i++){
+            this.#array[i-1] = this.#array[i]
+        }
+    }
+}
+
 export class ListNode {
     constructor(value) {
         this.value = value;
@@ -6,14 +143,13 @@ export class ListNode {
     }
 }
 
-export default class FrequencyListV1 {
+export default class FrequencyListV1T {
     constructor(frequency) {
         this.head = null;
         this.tail = null;
         this._size = 0;
         this.frequency = frequency;
-        this.pivotArray = [];
-        this.arrayCapacity = frequency // for computign when the pivotArray has to enlarge. gotta change this into a manual implementation
+        this.pivotArray = new DynamicArrayT(frequency);
 
         // for system
         this.lastAction = null
@@ -28,7 +164,7 @@ export default class FrequencyListV1 {
         this.space =  (4 * frequency) + 4 + 4 + 8 + 8 
 
         this.spacenotation = null
-        this.threads = 0
+        this.threads = 1
 
         this.spaceAdded = 0
         this._sizeAdded = 0
@@ -56,7 +192,7 @@ export default class FrequencyListV1 {
     static parse(serializedData){
         serializedData = JSON.parse(serializedData)
 
-        let newList = new FrequencyListV1(serializedData.frequency);
+        let newList = new FrequencyListV1T(serializedData.frequency);
 
         for(let i = 0; i < serializedData.size; i++){
             newList.add(i);
@@ -104,9 +240,12 @@ export default class FrequencyListV1 {
     // public methods
     add(value) {
         // for system 
+        this.threads = 1;
         this.spaceAdded = 0
         this._sizeAdded = 0
         this.pointersAdded = 0
+
+        let arrayExpanded = 0; // to know if the pivot array expanded in this action
 
         const startTime = performance.now();
 
@@ -149,27 +288,37 @@ export default class FrequencyListV1 {
         this._sizeAdded += 1 // for system
     
         if (this._size % this.frequency === 0) {
-            this.pivotArray.push(newNode);
+            // computing results when array has to enlarge/expand
+            let pivotArrayCapacity = this.pivotArray.getCapacity()
+            if(this.pivotArray.isFull()){
+                arrayExpanded = pivotArrayCapacity / 2
+                this.speednotation = "O(n)"
+                this.spacenotation = "O(n)"
+                this.spaceAdded += (pivotArrayCapacity / 2) * 4 // added space after enlagring pivotArray (4 bytes every empty cell)
+                this.space += (pivotArrayCapacity / 2) * 4
+                this.threads += 1 // uses billinear search algorithm for migrating values to new array
+            }
+
+            this.pivotArray.add(newNode);
 
             // for system
             this._sizepointers += 1
             this.pointersAdded += 1
             this.space += 2 // null becomes reference
             this.spaceAdded += 2
-            
-            // computing results when array has to enlarge/expand
-            if(this.pivotArray.length - 1 > this.arrayCapacity){
-                this.speednotation = "O(n)"
-                this.spacenotation = "O(n)"
-                this.arrayCapacity = this.arrayCapacity * 2
-                this.spaceAdded += (this.arrayCapacity / 2) * 4 // added space after enlagring pivotArray (4 bytes every empty cell)
-                this.space += (this.arrayCapacity / 2) * 4
-            }
         }
 
         // for system
         // computing speedms or execution time
         const endTime = performance.now();
+
+        //adding null values on the array after expanding
+        //placed here so it does not affect the performance
+        if(arrayExpanded !== 0){
+            this.pivotArray.fillWithNull(arrayExpanded)
+        }
+       
+
         let rawElapsedTime = endTime - startTime;
         let result = Math.floor(rawElapsedTime * 1e6) / 1e6
 
@@ -198,9 +347,12 @@ export default class FrequencyListV1 {
         }
 
         // for system 
+        this.threads = 1
         this.spaceAdded = 0
         this._sizeAdded = 0
         this.pointersAdded = 0
+
+        let arrayExpanded = 0; // to know if the pivot array expanded in this action
 
         const startTime = performance.now(); // getting execution time
 
@@ -258,41 +410,50 @@ export default class FrequencyListV1 {
 
         // update the pivot pointers. move the pointers to left by 1. 
         // this is to make pivot pointers stay pointing on nodes on frequency indeces
-        for(let i = closestPivotIndexInArray; i < this.pivotArray.length; i++){
-            this.pivotArray[i] = this.pivotArray[i].prev
+        for(let i = closestPivotIndexInArray; i < this.pivotArray.size(); i++){
+            this.pivotArray.update(i, this.pivotArray.get(i).prev)
         }
 
         // for system. for updating the pivot pointers
-        if(closestPivotIndexInArray >= this.pivotArray.length-1){
+        if(closestPivotIndexInArray >= this.pivotArray.size()-1){
              // if only have to update the tail
             this.speednotation = "O(1)"
         }else{
             this.speednotation = "O(n)" // where n is the length of the pivotArray
         }
         
-        // add pivot pointer
         if (this._size % this.frequency === 0) {
-            this.pivotArray.push(this.tail);
+            // computing results when array has to enlarge/expand
+            let pivotArrayCapacity = this.pivotArray.getCapacity()
+            if(this.pivotArray.isFull()){
+                arrayExpanded = pivotArrayCapacity / 2
+                this.speednotation = "O(n)"
+                this.spacenotation = "O(n)"
+                this.spaceAdded += (pivotArrayCapacity / 2) * 4 // added space after enlagring pivotArray (4 bytes every empty cell)
+                this.space += (pivotArrayCapacity / 2) * 4
+                this.threads += 1 // uses billinear search algorithm for migrating values to new array
+            }
+
+            // add pivot pointer to the array
+            this.pivotArray.add(newNode);
 
             // for system
             this._sizepointers += 1
             this.pointersAdded += 1
-            this.space += 2 // + 2 only, from null to reference
+            this.space += 2 // null becomes reference
             this.spaceAdded += 2
-            
-            // computing results when array has to enlarge/expand
-            if(this.pivotArray.length - 1 > this.arrayCapacity){
-                this.speednotation = "O(n)"
-                this.spacenotation = "O(n)"
-                this.arrayCapacity = this.arrayCapacity * 2
-                this.spaceAdded += (this.arrayCapacity / 2) * 4 // added space after enlagring pivotArray (4 bytes every empty cell)
-                this.space += (this.arrayCapacity / 2) * 4
-            }
         }
 
         // for system
         // computing speedms or execution time
         const endTime = performance.now();
+
+        //adding null values on the array after expanding
+        //placed here so it does not affect the performance
+        if(arrayExpanded !== 0){
+            this.pivotArray.fillWithNull(arrayExpanded)
+        }
+
         let rawElapsedTime = endTime - startTime;
         let result = Math.floor(rawElapsedTime * 1e6) / 1e6
 
@@ -321,6 +482,7 @@ export default class FrequencyListV1 {
         }
 
         // for system
+        this.threads = 1
         this.spaceAdded = 0
         this._sizeAdded = 0
         this.pointersAdded = 0
@@ -382,15 +544,15 @@ export default class FrequencyListV1 {
         if(closestPivot === this.head){
             closestPivotIndexInArray = 0
         }else if(closestPivot === this.tail){
-            closestPivotIndexInArray = this.pivotArray.length -1
+            closestPivotIndexInArray = this.pivotArray.size() -1
         }else if(closestPivotIndexInList < index){
             closestPivotIndexInArray += 1
         } 
 
         // update the pivot pointers. move the pointers to right by 1. 
         // this is to make pivot pointers stay pointing on nodes on frequency indeces
-        for(let i = closestPivotIndexInArray; i < this.pivotArray.length; i++){
-            let current = this.pivotArray[i]
+        for(let i = closestPivotIndexInArray; i < this.pivotArray.size(); i++){
+            let current = this.pivotArray.get(i)
 
             if(current.next){ // if it is not tail, move the pointer to right
                 this.pivotArray[i] = current.next
@@ -406,7 +568,7 @@ export default class FrequencyListV1 {
         }
 
         // for system. for when updating the pivot pointers
-        if(closestPivotIndexInArray >= this.pivotArray.length-1){
+        if(closestPivotIndexInArray >= this.pivotArray.size()-1){
             // if only have to update the tail
            this.speednotation = "O(1)"
         }else{
@@ -451,6 +613,7 @@ export default class FrequencyListV1 {
         }
 
         // for system
+        this.threads = 1
         this._sizeAdded = 0
         this.spaceAdded = 0
         this.pointersAdded = 0
@@ -525,14 +688,14 @@ export default class FrequencyListV1 {
             closestPivotIndexInArray = null
             closestPivotIndexInList = 0
             closestPivot = this.head
-        } else if (position > this.pivotArray.length) {
+        } else if (position > this.pivotArray.size()) {
             closestPivotIndexInArray = null
             closestPivotIndexInList = this._size-1
             closestPivot = this.tail
         } else {
             closestPivotIndexInArray = position -1
             closestPivotIndexInList = (position * this.frequency) - 1
-            closestPivot = this.pivotArray[position-1]
+            closestPivot = this.pivotArray.get(position-1)
         } 
 
         return {closestPivotIndexInArray, closestPivotIndexInList, closestPivot}
@@ -544,7 +707,7 @@ export default class FrequencyListV1 {
         let i = 0;
         while (current) {
             let pivotMarker = '';
-            if (this.pivotArray.includes(current)) {
+            if (this.pivotArray.getArray().includes(current)) {
                 pivotMarker = ' (pivot)';
             }
             console.log(`Index: ${i}, Value: ${current.value}${pivotMarker}`);
@@ -552,6 +715,7 @@ export default class FrequencyListV1 {
             i++;
         }
 
-        console.log([...this.pivotArray], "pivot array")
+        this.pivotArray.print()
+        console.log(this.getLastActionResult())
     }
 }

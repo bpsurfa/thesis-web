@@ -98,20 +98,21 @@ export default function MemoryResult() {
       if(openedDSDetails && openedDSDetails.dsDetails.JSONResults){ // if dstructures are not empty
           let results = JSON.parse(openedDSDetails.dsDetails.JSONResults)
 
-          let prev = 0
+          let prev = results[openedDSDetails.dsIndex].space
 
           for(let i = 0; i < results.length; i++){
               let currentIndex = results[i].currentIndex
               let spaceAdded = results[i].spaceAdded
-              let diff = prev - spaceAdded // 1 2 = -1 // 2 1 = 1 // 2 2 = 0
+              let space = results[i].space
+              let diff = prev - space // 1 2 = -1 // 2 1 = 1 // 2 2 = 0
               let sign = diff >= 0 ? "+" : "-"
 
               //formatting
               diff = Math.floor(Math.abs(diff) * 1e6) / 1e6;
               spaceAdded = Math.floor(spaceAdded * 1e6) / 1e6;
 
-              prev = spaceAdded
-              arr.push({currentIndex, spaceAdded, diff, sign})
+              prev = space 
+              arr.push({currentIndex, space, spaceAdded, diff, sign})
           }
       } 
       return arr
@@ -283,7 +284,7 @@ export default function MemoryResult() {
                         {allResults.map((item, index) => (
                             <div key={index}>
                                 <ListItemButton>
-                                  <ListItemText primary={"Index: " + item.currentIndex} secondary={item.spaceAdded + ` bytes`} />
+                                  <ListItemText primary={"Index: " + item.currentIndex} secondary={item.space + ` bytes`} />
 
                                   <Typography variant="body2" color="textSecondary">
                                       {`(${item.sign} ${item.diff} bytes)`}

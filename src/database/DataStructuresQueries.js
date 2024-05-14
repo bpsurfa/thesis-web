@@ -45,10 +45,10 @@ const initializeDS = ({accountID, batch, treeliststr, linkedliststr, dynamicarra
 
     const query = 
     "INSERT INTO `datastructures` (`DSID`, `AccountID`, `DSBatch`, `DSName`, `Threaded`, `Frequency`, `Capacity`, `Type`, `UserAddedPivot`, `DateCreated`) \
-    VALUES (NULL, ?, ?, 'Frequency List V2', '0', ?, NULL, 'CUSTOM LIST', '0', current_timestamp()), \
-    (NULL, ?, ?, 'Frequency List V1', '0', ?, NULL, 'CUSTOM LIST', '0', current_timestamp()), \
+    VALUES (NULL, ?, ?, 'Frequency List V2 T', '1', ?, NULL, 'CUSTOM LIST', '0', current_timestamp()), \
+    (NULL, ?, ?, 'Frequency List V1 T', '1', ?, NULL, 'CUSTOM LIST', '0', current_timestamp()), \
     (NULL, ?, ?, 'Doubly Linked List', '0', NULL, NULL, 'TRADITIONAL LIST', '0', current_timestamp()), \
-    (NULL, ?, ?, 'Dynamic Array', '0', NULL, ?, 'TRADITIONAL ARRAY', '0', current_timestamp());"
+    (NULL, ?, ?, 'Dynamic Array T', '1', NULL, ?, 'TRADITIONAL ARRAY', '0', current_timestamp());"
 
     con.query(query, values, (err, results) => {
         if (err) {

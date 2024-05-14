@@ -42,6 +42,7 @@ export default function SizeResult() {
 
   const handleClose = () => {
     setSizeDialog(false);
+    console.log(openedDSDetails)
   };
 
   const saveAsImage = () => {
@@ -67,7 +68,7 @@ export default function SizeResult() {
         if(openedDSDetails && openedDSDetails.dsDetails.JSONResults){
             let dsDetails = openedDSDetails.dsDetails
 
-            if(dsDetails.dsname === "Dynamic Array"){
+            if(dsDetails.dsname === "Dynamic Array" || dsDetails.dsname === "Dynamic Array T"){
                 let prevSize = JSON.parse(dsDetails.JSONResults)[0].prevSize
                 let size = dsDetails.size 
                 let sizeAdded = size - prevSize
@@ -99,15 +100,15 @@ export default function SizeResult() {
 
       if(openedDSDetails && openedDSDetails.dsDetails.JSONResults){ // if dstructures are not empty
           let results = JSON.parse(openedDSDetails.dsDetails.JSONResults)
-          let dsname = openedDSDetails.dsDetails.dsname
+          let dstype = openedDSDetails.dsDetails.type
 
           for(let i = 0; i < results.length; i++){
               let currentIndex = results[i].currentIndex
               let size 
               let sizeAdded
-              let text 
+              let text
 
-              if(dsname === "Dynamic Array"){
+              if(dstype === "TRADITIONAL ARRAY"){
                 size = results[i].capacity
                 sizeAdded = results[i].sizeAdded
                 text = "Capacity"
@@ -206,7 +207,7 @@ export default function SizeResult() {
                             <ListItemText primary={"Size"} secondary={output.size} />
 
                             <Typography variant="body2" color="textSecondary">
-                                {`(+ ${output.sizeAdded})`}
+                                {`(${output.sizeAdded >= 0 ? "+":""} ${output.sizeAdded})`}
                             </Typography>
                         </ListItemButton>   
 
@@ -216,7 +217,7 @@ export default function SizeResult() {
                             <ListItemText primary={output.primaryText} secondary={output.pointers} />
 
                             <Typography variant="body2" color="textSecondary">
-                                {`(+ ${output.pointersAdded})`}
+                                {`(${output.pointersAdded >= 0 ? "+":""} ${output.pointersAdded})`}
                             </Typography>
                         </ListItemButton>            
                     </List>
@@ -234,10 +235,10 @@ export default function SizeResult() {
                         {allResults.map((item, index) => (
                             <div key={index}>
                                 <ListItemButton>
-                                  <ListItemText primary={"Index: " + item.currentIndex} secondary={item.text + ": " + item.size} />
+                                  <ListItemText primary={"Index: " + item.currentIndex} secondary={item.text + ": " + item.size } />
 
                                   <Typography variant="body2" color="textSecondary">
-                                      {`(+ ${item.sizeAdded})`}
+                                      {`(${item.sizeAdded >= 0 ? "+" : ""}${item.sizeAdded})`}
                                   </Typography>
                                 </ListItemButton>
                                 {index !== allResults.length - 1 && <Divider />}

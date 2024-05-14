@@ -27,11 +27,13 @@ export default function DoubleAxesChart() {
         let arr = []
 
         JSONResults = JSON.parse(dstructures[openedDSDetails.dsIndex].JSONResults)
+        console.log(JSONResults, "Asdasddasds")
 
         for(let i = 0; i < JSONResults.length; i++){
             let obj = {
                 x: JSONResults[i].currentIndex,
-                y: JSONResults[i].sizeAdded === 1 ?  JSONResults[i].pointersAdded : JSONResults[i].sizeAdded
+                // y: JSONResults[i].sizeAdded === 1 ?  JSONResults[i].pointersAdded : JSONResults[i].sizeAdded
+                y: JSONResults[i].capacity !== undefined ? JSONResults[i].sizeAdded: JSONResults[i].pointersAdded
             } 
 
             arr.push(obj)
@@ -133,36 +135,37 @@ export default function DoubleAxesChart() {
 
     useEffect(() => {
         if(openedDSDetails && openedDSDetails.dsDetails.JSONResults){
-
-            if(openedDSDetails.currentDialog === "Size"){ // if speed is 
-                if(dsname === "Dynamic Array"){
-                    options.axisY.title = "Capacity Added"
-                    options.data[0].name = "Capacity Added"
-                    options.subtitles[0].text = "Index and Capacity Added"
-                }else{
-                    options.axisY.title = "Pointers Added"
-                    options.data[0].name = "Pointers Added"
-                    options.subtitles[0].text = "Index and Pointers Added"
-                }
-          
-                options.data[0].dataPoints = sizeDataPoints()
+            const newOptions = { ...options }; // Create a copy of the options object
             
-                options.axisX.interval = calculateInterval(JSONResults.length)
-                options.axisX.title = "Index"
-            }else if(openedDSDetails.currentDialog === "Threads"){
-                options.axisY.title = "Threads Used"
-                options.data[0].name = "Threads Used"
-                options.subtitles[0].text = "Index and Threads Used"
-
-                options.data[0].dataPoints = threadsDataPoints()
-
-                options.axisX.interval = calculateInterval(JSONResults.length)
-                options.axisX.title = "Index"
+            if(openedDSDetails.currentDialog === "Size"){
+                // Update the properties of the newOptions object
+                if(dsname === "Dynamic Array" || dsname === "Dynamic Array T"){
+                    newOptions.axisY.title = "Capacity Added";
+                    newOptions.data[0].name = "Capacity Added";
+                    newOptions.subtitles[0].text = "Index and Capacity Added";
+                } else {
+                    newOptions.axisY.title = "Pointers Added";
+                    newOptions.data[0].name = "Pointers Added";
+                    newOptions.subtitles[0].text = "Index and Pointers Added";
+                }
+              
+                newOptions.data[0].dataPoints = sizeDataPoints();
+                newOptions.axisX.interval = calculateInterval(JSONResults.length);
+                newOptions.axisX.title = "Index";
+            } else if(openedDSDetails.currentDialog === "Threads"){
+                newOptions.axisY.title = "Threads Used";
+                newOptions.data[0].name = "Threads Used";
+                newOptions.subtitles[0].text = "Index and Threads Used";
+    
+                newOptions.data[0].dataPoints = threadsDataPoints();
+                newOptions.axisX.interval = calculateInterval(JSONResults.length);
+                newOptions.axisX.title = "Index";
             }
-
-            setData(options)
+    
+            // Set the newOptions object as state
+            setData(newOptions);
         }
-    }, [dstructures])
+    }, [dstructures]);
 
     return (
         <div className='w-full h-full' ref={chartContainerRef}>

@@ -49,8 +49,8 @@ export default function DynamicArrayDialog({dsDetails, dynamicArrayDialog, setDy
 
   const handleDownload = () => {
     const link = document.createElement('a');
-    link.download = 'DynamicArray.js';
-    link.href = `${server}/DynamicArray.js`; // Adjust the URL as needed
+    link.download = 'DynamicArrayT.js';
+    link.href = `${server}/DynamicArrayT.js`; // Adjust the URL as needed
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -90,7 +90,7 @@ export default function DynamicArrayDialog({dsDetails, dynamicArrayDialog, setDy
               {dsDetails.dsname}
             </Typography>
 
-            <Tooltip title="Download the dynamic array class implementation in javascript">
+            <Tooltip title="Download the DynamicArrayT class implementation in javascript">
               <Button autoFocus color="inherit" onClick={handleDownload}>
                 Download 
               </Button>
@@ -208,9 +208,9 @@ export default function DynamicArrayDialog({dsDetails, dynamicArrayDialog, setDy
             <section className='h-[50%] min-h-[400px] w-full flex gap-5 p-5'>
                 <div className='w-full h-full bg-gray-100 shadow3 rounded flex'>
                     <div className="min-w-[65%] w-full h-full flex flex-col overflow-auto ">
-                        <div className="flex-[1] min-h-[30%] text-[1.5rem] font-bold text-gray-800 flex items-end justify-center"> What is Dynamic Array </div>
+                        <div className="flex-[1] min-h-[30%] text-[1.5rem] font-bold text-gray-800 flex items-end justify-center"> What is Dynamic Array T</div>
                         <div className="flex-[2] text-[1rem] font-semibold text-gray-700 text-justify px-[10%] py-[5%] leading-loose"> 
-                            Dynamic array is an index-based linear data structure and is a modified version of the traditional array. Unlike the traditional array in some programming languages that have a fixed size, a dynamic array can grow or shrink dynamically based on the number of elements it contains.  Dynamic arrays typically employ techniques such as automatic resizing, memory reallocation, and efficient indexing to provide efficient access and manipulation of elements. In languages, such as javascript, dynamic array is the default implementation of the array.
+                            Dynamic array T is an index-based linear data structure and is a modified version of the traditional array. Unlike the traditional array in some programming languages that have a fixed size, a dynamic array can grow or shrink dynamically based on the number of elements it contains.  Dynamic arrays typically employ techniques such as automatic resizing, memory reallocation, and efficient indexing to provide efficient access and manipulation of elements. In languages, such as javascript, dynamic array is the default implementation of the array. The 'T' in the name indicates multi-threading capability.
                         </div>
                     </div>
 
@@ -232,6 +232,7 @@ export default function DynamicArrayDialog({dsDetails, dynamicArrayDialog, setDy
                             <div className='flex flex-col gap-2 text-justify leading-loose'>
                               <li> Write operations are array's weakness. When the capacity is reached, array has to create an entire new array with larger size before transfering the items.</li>
                               <li> When doing write operation somewhere in the middle of the array, it has to move all items to right one by one in order to make a space.</li>
+                              <li> When moving items, it assigns two threads to transfer a half of the list each, effectively doubling the speed.</li>
                             </div >
                         </div>
                     </div>       

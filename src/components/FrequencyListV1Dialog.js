@@ -49,8 +49,8 @@ export default function FrequencyListV1Dialog({dsDetails, frequencyListV1Dialog,
 
   const handleDownload = () => {
     const link = document.createElement('a');
-    link.download = 'FrequencyListV1.js';
-    link.href = `${server}/FrequencyListV1.js`; 
+    link.download = 'FrequencyListV1T.js';
+    link.href = `${server}/FrequencyListV1T.js`; 
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -90,7 +90,7 @@ export default function FrequencyListV1Dialog({dsDetails, frequencyListV1Dialog,
               {dsDetails.dsname}
             </Typography>
 
-            <Tooltip title="Download the FrequencyListV1 class implementation in javascript">
+            <Tooltip title="Download the FrequencyListV1T class implementation in javascript">
               <Button autoFocus color="inherit" onClick={handleDownload}>
                 Download 
               </Button>
@@ -208,14 +208,14 @@ export default function FrequencyListV1Dialog({dsDetails, frequencyListV1Dialog,
             <section className='h-[50%] min-h-[400px] w-full flex gap-5 p-5'>
                 <div className='w-full h-full bg-gray-100 shadow3 rounded flex'>
                     <div className="min-w-[65%] w-full h-full flex flex-col overflow-auto ">
-                        <div className="flex-[1] min-h-[30%] text-[1.5rem] font-bold text-gray-800 flex items-end justify-center"> What is Frequency List V1 </div>
+                        <div className="flex-[1] min-h-[30%] text-[1.5rem] font-bold text-gray-800 flex items-end justify-center"> What is Frequency List V1 T</div>
                         <div className="flex-[2] text-[1rem] font-semibold text-gray-700 text-justify px-[10%] py-[5%] leading-loose"> 
-                            Frequency List V1 is a custom doubly linked list that involves putting a pivot pointer at the end of the list every 'frequency' number of items added. 
+                            Frequency List V1 T is a custom doubly linked list that involves putting a pivot pointer at the end of the list every 'frequency' number of items added. 
                             Pivot pointers are maintained at those indeces no matter the case, hence, the name Frequency List. Pivot Pointers are stored in a seperate array, 
                             and its initial size is the frequency value given. Head and Tail is also a pivot pointer but is not stored in pivotArray. 
                             When it comes to traversal, this version is the fastest out of all custom lists as it makes use of the direct access capability 
                             of array to get to the closest pivot pointer; before traversing the actual list from there. It is important to note that this version 
-                            naturally occupies more space due to having additional datastructure for pivot pointers.
+                            naturally occupies more space due to having additional datastructure for pivot pointers. The 'T' in the name indicates multi-threading capability.
                         </div>
                     </div>
 
@@ -254,8 +254,8 @@ export default function FrequencyListV1Dialog({dsDetails, frequencyListV1Dialog,
                                     This makes the speed notation O(1) in average and O(n) whenever it has to expand.
                                 </li>
                                 <li> 
-                                    The array of pivot pointers also follows the same rules as the regular dynamic array, it has to expand its capacity once became full. This makes
-                                    the notation O(n).
+                                    The array of pivot pointers also follows the same rules as the regular Dynamic Array T, it has to expand its capacity once became full. This makes
+                                    the notation O(n). All multi-threading capability are also applied in this aspect.
                                 </li>
                             </div >
                         </div>
